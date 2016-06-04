@@ -27,7 +27,7 @@ public class SelectToObject {
         PlainSelect plain = (PlainSelect) selectStatement.getSelectBody();
         TablesQueried table_queried = new TablesQueried();
 
-        //Considerando o from com apenas uma table por enquanto
+        //Considering from only one table
         FromItem fromItem = plain.getFromItem();
         if (fromItem.getAlias() != null) {
             table_queried.setName(fromItem.toString().split(" ")[0]);
@@ -38,12 +38,12 @@ public class SelectToObject {
 
         addParameterProjection(plain, table_queried);
         selectClause.addTablesQueried(table_queried);
-        //Se houver cláusulas joins
+        //If there joins clauses
         if (plain.getJoins() != null && plain.getJoins().size() > 0) {
             selectClause.setHasJoin(true);
             addOrderBy(plain);
             executeJoin(plain);
-            //Se não houver joins
+            //If there are no joins
         } else {
             selectClause.setHasJoin(false);
             addWhere(plain, selectStatement);
@@ -59,15 +59,18 @@ public class SelectToObject {
 
         for (int i = 0; i < selectItems.size(); i++) {
             ProjectionParams parameter = new ProjectionParams();
-            //Faz a verificação se o atributo pertence a tabela em casos de a.actor
+
+            // Checks whether the attribute belongs to the table in cases of a.actor
             if (table_queried.getAlias() != null) {
-                String alias_tabela = table_queried.getAlias() + ".";
-                //Se o atributo for da tabela em questão
-                if (selectItems.get(i).toString().contains(alias_tabela)) {
-                    if (selectItems.get(i).toString().replaceFirst(alias_tabela, "").equals("*")) {
+                String table_alias = table_queried.getAlias() + ".";
+
+                //If the attribute is the table in question
+                if (selectItems.get(i).toString().contains(table_alias)) {
+                    if (selectItems.get(i).toString().replaceFirst(table_alias, "").equals("*")) {
                         table_queried.setIsAllColumns(true);
                     } else {
-                        //Verifica se algum item buscado é uma função
+
+                        //Checks if any item sought is a function eg MAX,COUNT
                         if (((SelectExpressionItem) selectItems.get(i)).getExpression() instanceof Function) {
                             Function function = (Function) ((SelectExpressionItem) selectItems.get(i)).getExpression();
                             Functions functions = new Functions();
@@ -85,26 +88,27 @@ public class SelectToObject {
                                 functions.setAlias(alias);
                             }
                             selectClause.addFunction(functions);
-                        } else {  // Se nao for, por enquanto consideramos que é uma coluna
+                        } else {  // If it is not , for now we consider it a column
                             if (((SelectExpressionItem) selectItems.get(i)).getAlias() != null) {
                                 String alias = ((SelectExpressionItem) selectItems.get(i)).getAlias();
-                                parameter.setName(selectItems.get(i).toString().split(" ")[0].toString().replaceFirst(alias_tabela, ""));
+                                parameter.setName(selectItems.get(i).toString().split(" ")[0].toString().replaceFirst(table_alias, ""));
                                 parameter.setAlias(alias);
                                 table_queried.addParameters(parameter);
                             } else {
-                                parameter.setName(selectItems.get(i).toString().replaceFirst(alias_tabela, ""));
+                                parameter.setName(selectItems.get(i).toString().replaceFirst(table_alias, ""));
                                 table_queried.addParameters(parameter);
                             }
 
                         }
                     }
                 }
-                //Se a tabela não possui alias, consideramos que seja somente uma tabela
+                //If the table has no alias , we consider that it is only a table
             } else {
                 if (selectItems.get(i).toString().equals("*")) {
                     table_queried.setIsAllColumns(true);
                 } else {
-                    //Verifica se algum item buscado é uma função
+
+                    //Checks if any item sought is a function eg MAX,COUNT
                     if (((SelectExpressionItem) selectItems.get(i)).getExpression() instanceof Function) {
                         String alias;
                         Function function = (Function) ((SelectExpressionItem) selectItems.get(i)).getExpression();
@@ -124,7 +128,7 @@ public class SelectToObject {
                         }
                         selectClause.addFunction(functions);
                     } else {
-                        //Em casos de Customer.customer
+                        //In cases like Customer.customer
                         String table = ((Column) ((SelectExpressionItem) selectItems.get(i)).getExpression()).getTable().getName();
 
                         if (table != null) {
@@ -138,7 +142,8 @@ public class SelectToObject {
                             }
 
                         } else {
-                            // Se nao for, por enquanto consideramos que é uma coluna
+
+                            // If it is not , for now we consider it a column
                             if (((SelectExpressionItem) selectItems.get(i)).getAlias() != null) {
                                 String alias = ((SelectExpressionItem) selectItems.get(i)).getAlias();
                                 parameter.setAlias(alias);
@@ -194,7 +199,7 @@ public class SelectToObject {
     public void executeJoin(PlainSelect plain) {
         JoinClause join = new JoinClause();
 
-        //Considerando apenas 1 join
+        //Considering only one join
         if (((Join) plain.getJoins().get(0)).isInner()) {
             join.setJoinType("INNER");
         } else if (((Join) plain.getJoins().get(0)).isFull()) {
@@ -209,11 +214,11 @@ public class SelectToObject {
             join.setJoinType("RIGHT");
         } else if (((Join) plain.getJoins().get(0)).isSimple()) {
             join.setJoinType("SIMPLE");
-            //Quando é Simple Join, é da forma FROM customer a, client c
-            //Nesse caso so possui o from (customer a) e o rightexpression (client c)
+            //When Simple Join, is the way the FROM customer , client c
+            //In this case only has the from (customer a) and rightexpression (client c )
         }
 
-        //Deve-se verificar se possui alias ou name (ex: a.name ou Aluno.Nome)
+        //One should check whether you have or alias name (eg a.name or Al.Name )
         String left_expression_alias = ((Column) ((EqualsTo) ((Join) plain.getJoins().get(0)).getOnExpression()).getLeftExpression()).getTable().getAlias();
         String left_expression_nome = ((Column) ((EqualsTo) ((Join) plain.getJoins().get(0)).getOnExpression()).getLeftExpression()).getTable().getName();
 
@@ -241,26 +246,28 @@ public class SelectToObject {
         selectClause.addJoin(join);
 
         TablesQueried table_join = new TablesQueried();
-        //Adiciona a parte depois do INNER na tablequeried
+
+        //Adds the part after the INNER in tablequeried
         table_join.setName(((Join) plain.getJoins().get(0)).getRightItem().toString().split(" ")[0]);
         table_join.setAlias(((Join) plain.getJoins().get(0)).getRightItem().getAlias());
         addParameterProjection(plain, table_join);
         selectClause.addTablesQueried(table_join);
-        //Add os parameters de junção à lista de params da tabela
+
+        //Add the junction parameters to the table params list
         addParameterProjectionJoin(param1, left_expression_alias, param2, right_expression_alias, left_expression_nome, right_expression_nome);
 
         /*
-         System.out.println("Informações sobre dados buscados");
+         System.out.println("Information fetched data");
          for(int i=0;i<selectClause.getTablesQueried().size();i++){
-         System.out.println("Tabela:"+i+" "+
+         System.out.println("Table:"+i+" "+
          selectClause.getTablesQueried().get(i).getName()+ " Alias "+
          selectClause.getTablesQueried().get(i).getAlias());
-         System.out.print("Parâmetros: ");
+         System.out.print("Parameters: ");
          if(selectClause.getTablesQueried().get(i).isIsAllColumns()){
-         System.out.println("Todas as colunas");
+         System.out.println("All Columns");
          }else{
          for(int j=0; j< selectClause.getTablesQueried().get(i).getParam_projection().size();j++){
-         System.out.println("Nome: "+
+         System.out.println("Name: "+
          selectClause.getTablesQueried().get(i).getParam_projection().get(j).getName()+
          " Alias: "+
          selectClause.getTablesQueried().get(i).getParam_projection().get(j).getAlias());

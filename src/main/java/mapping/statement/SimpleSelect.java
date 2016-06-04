@@ -35,7 +35,7 @@ public class SimpleSelect {
             }
             result_set += "},";
         }
-        long fim = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
         //}
 
         return result_set;

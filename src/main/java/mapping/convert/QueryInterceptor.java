@@ -49,15 +49,15 @@ public class QueryInterceptor {
             long initialExecuteTime, finalExecuteSelectTime, totalSelectExecutionTime = 0,
                     initialHeaderExecutionTime, finalHeaderExecutionTime, totalHeaderExecutionTime = 0,
                     initialResultsetExecutionTime, finalResultsetExecutionTime, totalResultsetExecutionTime = 0;
-            long tempoInicialDeclaracoes, tempoFinalDeclaracoes;
-            long tempoInicial = System.currentTimeMillis();
+            long initialTime, finalTime;
+            long initTime = System.currentTimeMillis();
 
             switch (queryType) {
                 case "SELECT":
                     /* Create objects from the select statement */
                     SelectClause selectTranslate = new SelectToObject(query).selectClause;
-                    long tempoFinalQueryToObject = System.currentTimeMillis();
-                    long tempoTotalQueryToObject = tempoFinalQueryToObject - tempoInicial;
+                    long finalQueryToObj_time = System.currentTimeMillis();
+                    long totalQueryToObj_time = finalQueryToObj_time - initTime;
                     DBCursor resultSimpleQuery = null;
                     String result_set = null,
                             header;

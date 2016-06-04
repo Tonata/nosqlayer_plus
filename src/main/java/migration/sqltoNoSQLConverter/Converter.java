@@ -68,9 +68,9 @@ public class Converter {
                     columnsContainsForeignKey.add(columnForeignKey);
                     columnsReferenced.add(columnReferencedForeignKey);
                     tablesReferenced.add(tableReferencedForeignKey);
-                    /*System.out.println(tabelaChaveEstrangeira+" - "+colunaChaveEstrangeira+
-                     " - "+tabelaReferenciadaChaveEstrangeira+" - "+
-                     colunaReferenciadaChaveEstrangeira);*/
+                    /*System.out.println(tableForeignKey+" - "+columnForeignKey+
+                     " - "+tableReferencedForeignKey+" - "+
+                     columnReferencedForeignKey);*/
                 }
 
                 while (result_columns.next()) {
@@ -117,16 +117,16 @@ public class Converter {
         try{
 
             for (Table table : dataBase.getTables()) {
-                // System.out.println("Tabela: " + table.getName());
+                // System.out.println("Table: " + table.getName());
                 BasicDBObject table_metadata = new BasicDBObject("table", table.getName());
                 ArrayList<String> columns = new ArrayList<>();
                 for (Column column : table.getColumns()) {
                     if (column.isPrimaryKey()) {
                         table_metadata.append("auto_inc", column.getName());
                     }
-                    // System.out.println(coluna.getName());
+
                     columns.add(column.getName());
-                    //System.out.println("   UNICO? "+coluna.isIsUnique());
+
                 }
                 table_metadata.append("columns", columns);
                 dbCollection.save(table_metadata);

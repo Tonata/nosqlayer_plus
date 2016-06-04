@@ -41,10 +41,10 @@ public class SelectAggObjectTranslate {
             limit = selectStatement.getLimit().getRowCount();
             offset = selectStatement.getLimit().getOffset();
         }
-        long tempoInicial = System.currentTimeMillis();
-        ArrayList<DBObject> vetor_valores = aggregation.returnVectorValues(criteria, projection, groupBy, order, limit, offset, selectStatement);
-        AggregationOutput output_agg = aggregation.returnAggResult(vetor_valores, collection);
-        long tempoFinal = System.currentTimeMillis();
+        long initialTime = System.currentTimeMillis();
+        ArrayList<DBObject> vector_values = aggregation.returnVectorValues(criteria, projection, groupBy, order, limit, offset, selectStatement);
+        AggregationOutput output_agg = aggregation.returnAggResult(vector_values, collection);
+        long finalTime = System.currentTimeMillis();
 
         return output_agg;
     }
