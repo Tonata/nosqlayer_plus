@@ -5,7 +5,7 @@ import com.mongodb.BasicDBObject;
 import com.mongodb.DBCollection;
 import com.mongodb.DBObject;
 import com.mongodb.util.JSON;
-import migration.connectionConfig.MongoConnection;
+import connectionConfig.MongoConnection;
 import migration.model.Column;
 import migration.model.Table;
 
