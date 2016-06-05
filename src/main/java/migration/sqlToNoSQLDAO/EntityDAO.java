@@ -30,7 +30,7 @@ public class EntityDAO<T> {
         BasicDBObject document = new BasicDBObject(mapEntity);
         dbCollection.save(document);
 
-        // System.out.println("Save :> " + document);
+//         System.out.println("Save :> " + document);
     }
 
     public void ensureIndex(Table table){
@@ -46,7 +46,7 @@ public class EntityDAO<T> {
         str_indices = str_indices.substring(0, str_indices.length()-1);
         str_indices += "}";
 
-        System.out.println(str_indices);
+//        System.out.println(str_indices);
 
         if(!str_indices.equals("{}") && !str_indices.equals("}")) {
             DBObject indices = (DBObject) JSON.parse(str_indices);

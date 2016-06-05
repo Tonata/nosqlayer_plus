@@ -1,4 +1,4 @@
-package migration.sqltoNoSQLConverter;
+package migration.sqlToNoSQLDAO;
 
 import migration.model.Column;
 import migration.model.Table;

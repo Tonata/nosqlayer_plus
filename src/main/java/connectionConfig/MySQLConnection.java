@@ -31,13 +31,13 @@ public class MySQLConnection  {
     public MySQLConnection(String DB_NAME) {
         this.DATABASE = DB_NAME;
 
+
     }
 
     public MySQLConnection() {
         super();
 
     }
-
 
     public Connection getConnection() {
 

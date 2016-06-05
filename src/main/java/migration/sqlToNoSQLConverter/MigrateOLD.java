@@ -1,4 +1,4 @@
-package migration.sqltoNoSQLConverter;
+package migration.sqlToNoSQLConverter;
 
 import com.mongodb.AggregationOutput;
 import com.mongodb.BasicDBObject;
@@ -20,7 +20,7 @@ import java.sql.ResultSet;
 /**
  * Created by martian on 2016/05/12.
  */
-public class ConverterOLD {
+public class MigrateOLD {
 
     static final String DATABASE = "w3c";
     static final String HOST = "localhost";

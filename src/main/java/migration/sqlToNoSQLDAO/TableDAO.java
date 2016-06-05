@@ -1,7 +1,6 @@
 package migration.sqlToNoSQLDAO;
 
 import migration.model.Table;
-import migration.sqltoNoSQLConverter.TableMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
