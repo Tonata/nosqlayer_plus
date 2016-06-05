@@ -67,7 +67,7 @@ public class Migrate {
                 while (result_columns.next()) {
                     String name                                 = result_columns.getString("COLUMN_NAME");
                     String type                                 = result_columns.getString("TYPE_NAME");
-                    int size                                    = result_columns.getInt("COLUMN_SIZE");
+                    int column_size                             = result_columns.getInt("COLUMN_SIZE");
 
 //                    System.out.println("Column name: [" + name + "]; type: [" + type + "]; size: [" + size + "]");
                 }
@@ -174,19 +174,20 @@ public class Migrate {
                 long sub_total  = total/subParts;
 //                System.out.println("metadata created 3");
 
-                for (int i = 0; i < subParts; i++) {
+              //  for (int i = 0; i < subParts; i++) {
                     String sql2 = "SELECT * FROM " + table.getName()+ ";"; /*+ " LIMIT "+start+","+sub_total;*/
+
                     try (PreparedStatement stmt2 = conn.prepareStatement(sql2)) {
                         ResultSet resultSet2 = stmt2.executeQuery();
                         while (resultSet2.next()) {
 
                             new TableDAO().save(table, resultSet2);
-//                            System.out.println(table.getName() + " - " + value_);
+
                             value_++;
                         }
                     }
-                    start = start+sub_total;
-                }
+//                    start = start+sub_total;
+               // }
 
                 DBObject criteria                   = (DBObject) JSON.parse("{table:'" + table.getName() + "'}");
                 DBObject projection                 = (DBObject) JSON.parse("{auto_inc:1}");
@@ -195,6 +196,7 @@ public class Migrate {
                 AggregationOutput search_auto_inc   = dbCollection.aggregate(criteria_ppl, projection_ppl);
 
                 String json_str = search_auto_inc.results().toString();
+//                System.out.println("1- " + json_str);
 
                 JSONArray array = new JSONArray(json_str);
                 JSONObject result_set;
