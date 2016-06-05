@@ -21,14 +21,15 @@ import java.util.ArrayList;
 /**
  * Created by martian on 2016/05/12.
  */
-public class Converter {
+public class Migrate {
 
-    MySQLConnection mySQLConnection =  new MySQLConnection();
+
     DBCollection dbCollection;
 //    Database dataBase = new Database();
+    MySQLConnection mySQLConnection = new MySQLConnection();
 
 
-    public Converter() {
+    public Migrate() {
     }
 
     public Database mountObjects(Connection conn, Database dataBase ){
@@ -36,7 +37,6 @@ public class Converter {
 //        Connection connection = null;
 //
 //        connection = mySQLConnection.getConnection();
-
         dataBase.setName(mySQLConnection.getDATABASE());
         dataBase.setHost(mySQLConnection.getHOST());
         dataBase.setPort(mySQLConnection.getPORT());
@@ -45,13 +45,24 @@ public class Converter {
 
             DatabaseMetaData DB_MD = conn.getMetaData();
 
-            ResultSet result_tables = DB_MD.getTables(null, null, null, null);
-//            System.out.println("");
+            ResultSet result_tables = DB_MD.getTables(conn.getCatalog(), dataBase.getName(), "%", null);
+
+
             while (result_tables.next()){
+
+//                System.out.println("Table Name:" + result_tables.getString("TABLE_NAME"));
 
                 Table table = new Table();
                 table.setName(result_tables.getString("TABLE_NAME"));
-                ResultSet result_columns = DB_MD.getColumns(null, null, table.getName(), null);
+                ResultSet result_columns = DB_MD.getColumns(null, null, table.getName(), "%");
+
+                while (result_columns.next()) {
+                    String name     = result_columns.getString("COLUMN_NAME");
+                    String type     = result_columns.getString("TYPE_NAME");
+                    int size        = result_columns.getInt("COLUMN_SIZE");
+
+//                    System.out.println("Column name: [" + name + "]; type: [" + type + "]; size: [" + size + "]");
+                }
 
                 ResultSet foreignKeys = DB_MD.getImportedKeys(null, null, result_tables.getString("TABLE_NAME"));
 
@@ -68,9 +79,9 @@ public class Converter {
                     columnsContainsForeignKey.add(columnForeignKey);
                     columnsReferenced.add(columnReferencedForeignKey);
                     tablesReferenced.add(tableReferencedForeignKey);
-                    /*System.out.println(tableForeignKey+" - "+columnForeignKey+
-                     " - "+tableReferencedForeignKey+" - "+
-                     columnReferencedForeignKey);*/
+//                       System.out.println(tableForeignKey+" - "+columnForeignKey+
+//                       " - "+tableReferencedForeignKey+" - "+
+//                       columnReferencedForeignKey);
                 }
 
                 while (result_columns.next()) {
@@ -110,13 +121,13 @@ public class Converter {
         return dataBase;
     }
 
-    public void createMetaData(Database dataBase, Connection conn)  /* 2nd parameter needed for generic NoSQL collection */{
+    public void createMetaData(Database database, Connection conn)  /* 2nd parameter needed for generic NoSQL collection */{
 
-        dbCollection = MongoConnection.getInstance().getDB().getCollection("metadata");
+        dbCollection = MongoConnection.getInstance().getDB().getCollection("metadata2");
 
         try{
 
-            for (Table table : dataBase.getTables()) {
+            for (Table table : database.getTables()) {
                 // System.out.println("Table: " + table.getName());
                 BasicDBObject table_metadata = new BasicDBObject("table", table.getName());
                 ArrayList<String> columns = new ArrayList<>();
@@ -135,14 +146,17 @@ public class Converter {
             System.out.println("metadata created");
 //            Connection connection = mySQLConnection.getConnection();
 
-            for (Table table : dataBase.getTables()){
+            for (Table table : database.getTables()){
 
                 int value_ = 1;
                 int subParts = 10;
                 long start = 0;
+                System.out.println("metadata created 2");
+
 
                 long total = 20198310;
                 long sub_total = total/subParts;
+                System.out.println("metadata created 2");
 
                 for (int i = 0; i < subParts; i++) {
                     String sql2 = "SELECT * FROM " + table.getName() + " LIMIT "+start+","+sub_total;
@@ -186,6 +200,8 @@ public class Converter {
                     while (result.next()) {
                         maximo_id = result.getInt("maximo_id");
                     }
+
+//                    System.out.println("find_max_auto_inc: " + find_max_auto_inc); /* BUG  5/6/2016*/
                 }
 
                 String sequence_field = "seq"; // the name of the field which holds the sequence
@@ -194,6 +210,8 @@ public class Converter {
                 seq.insert(new_seq);
 
                 new EntityDAO<>().ensureIndex(table);
+
+//                System.out.println("new_seq: " + new_seq.toString());
 
             }
 

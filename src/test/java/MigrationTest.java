@@ -1,6 +1,6 @@
 import connectionConfig.MySQLConnection;
 import migration.model.Database;
-import migration.sqltoNoSQLConverter.Converter;
+import migration.sqltoNoSQLConverter.Migrate;
 import org.testng.annotations.*;
 
 /**
@@ -8,23 +8,24 @@ import org.testng.annotations.*;
  */
 public class MigrationTest {
 
-    private Converter converter;
-    private MySQLConnection conn;
+    private Migrate migrate;
+    private MySQLConnection mysqlConnection;
     private Database DB;
 
     public MigrationTest() {
 
-        converter = new Converter();
+
     }
 
     @Test
     public void ya(){
 
         DB = new Database();
-        conn = new MySQLConnection("world");
+        mysqlConnection = new MySQLConnection("world");
+        migrate = new Migrate();
 
-        converter.createMetaData(   converter.mountObjects(conn.getConnection(), DB),
-                                    conn.getConnection());
+        migrate.createMetaData(   migrate.mountObjects(mysqlConnection.getConnection(), DB),
+                                    mysqlConnection.getConnection());
     }
 
     @BeforeClass

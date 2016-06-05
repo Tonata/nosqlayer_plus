@@ -9,7 +9,21 @@ public class Database {
     private String host;
     private int port;
     private Collection<Table> tables = new ArrayList();
-    
+
+    public Database() {
+
+    }
+
+    public Database(String name,
+                    String host,
+                    int port) {
+
+        this.name = name;
+        this.host = host;
+        this.port = port;
+
+    }
+
     public String getHost() {
         return host;
     }

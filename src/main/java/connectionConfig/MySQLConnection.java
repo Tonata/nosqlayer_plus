@@ -1,12 +1,14 @@
 package connectionConfig;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
+import java.sql.*;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.Executor;
 
 /**
  * Created by martian on 2016/05/12.
  */
-public class MySQLConnection {
+public class MySQLConnection  {
 
     private String DATABASE;
     private static final String HOST = "localhost";
@@ -20,13 +22,19 @@ public class MySQLConnection {
 
     private static final String DB_URL = "jdbc:mysql://localhost/"; /* should not be hard coded
                                                                             (concatenate variable DATABASE) */
-    private static final String JDBC_Driver = "com.mysql.jdbc.Driver";
+//    private static final String JDBC_Driver = "com.mysql.jdbc.Driver";
+
+    private static final String JDBC_Driver = "com.mysql.cj.jdbc.Driver";
+
+    private Connection connection;
 
     public MySQLConnection(String DB_NAME) {
         this.DATABASE = DB_NAME;
+
     }
 
     public MySQLConnection() {
+        super();
 
     }
 
@@ -45,6 +53,10 @@ public class MySQLConnection {
         }
 
         return connection;
+    }
+
+    public void setConnection(Connection conn){
+        this.connection = conn;
     }
 
     public  String getDATABASE() {
