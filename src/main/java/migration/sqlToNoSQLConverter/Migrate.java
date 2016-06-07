@@ -58,7 +58,7 @@ public class Migrate {
 
             while (result_tables.next()){
 
-//                System.out.println("Table Name:" + result_tables.getString("TABLE_NAME"));
+                System.out.println("Table Name:" + result_tables.getString("TABLE_NAME"));
 
                 Table table = new Table();
                 table.setName(result_tables.getString("TABLE_NAME"));
@@ -69,7 +69,7 @@ public class Migrate {
                     String type                                 = result_columns.getString("TYPE_NAME");
                     int column_size                             = result_columns.getInt("COLUMN_SIZE");
 
-//                    System.out.println("Column name: [" + name + "]; type: [" + type + "]; size: [" + size + "]");
+                    System.out.println("Column name: [" + name + "]; type: [" + type + "]; size: [" + column_size + "]");
                 }
 
                 ResultSet foreignKeys = DB_MD.getImportedKeys(null, null, result_tables.getString("TABLE_NAME"));
@@ -139,7 +139,7 @@ public class Migrate {
 
     public void createMetaData(Database database, Connection conn)  /* 2nd parameter needed for generic NoSQL collection */{
 
-        dbCollection = MongoConnection.getInstance().getDB().getCollection("metadataTest");
+        dbCollection = MongoConnection.getInstance().getDB().getCollection("metadata");
 
         try{
 
@@ -223,8 +223,8 @@ public class Migrate {
 //                    System.out.println("find_max_auto_inc: " + find_max_auto_inc); /* BUG  5/6/2016*/
                 }
 
-                String sequence_field = "seqTest"; // the name of the field which holds the sequence
-                DBCollection seq = MongoConnection.getInstance().getDB().getCollection("seqTest"); // get the collection (this will create it if needed)
+                String sequence_field = "seq"; // the name of the field which holds the sequence
+                DBCollection seq = MongoConnection.getInstance().getDB().getCollection("seq"); // get the collection (this will create it if needed)
                 DBObject new_seq = (DBObject) JSON.parse("{'_id':'" + table.getName() + "', 'seq':" + maximo_id + "}");
                 seq.insert(new_seq);
 

@@ -18,9 +18,12 @@ import static mapping.convert.QueryInterceptor.database;
 public class SelectSimpleObjectTranslate {
 
     public DBCursor executeMongoSelect(SelectClause selectStatement) throws JSQLParserException{
-        database = MongoConnection.getInstance().getDB();
+//        database = MongoConnection.getInstance().getDB(); // MAKE LESS COUPLED
 
         DBCollection collection = database.getCollection(selectStatement.getTablesQueried().get(0).getName());
+
+        System.out.println("1 - DBCollection: " + collection.toString());
+
         DBCursor dbCursor;
         DBObject order = (DBObject) JSON.parse(returnOrder(selectStatement));
         int limit = 0, offset = 0;
@@ -41,6 +44,7 @@ public class SelectSimpleObjectTranslate {
         } else {
             dbCursor = collection.find(selectStatement.getCriteriaIdentifier().whereQuery, projection).skip(offset).limit(limit);
         }
+        System.out.println("1.1 - projection: " + projection);
 
         return dbCursor;
     }
@@ -48,22 +52,31 @@ public class SelectSimpleObjectTranslate {
     public BasicDBObject returnProjection(SelectClause select) {
         BasicDBObject fields = new BasicDBObject();
         if (select.getTablesQueried().get(0).isIsAllColumns()) {
+            System.out.println("yes");
             return null;
+
         } else {
 
             if (select.getTablesQueried().get(0).getParam_projection().size() > 0) {
+
                 if (!(select.getTablesQueried().get(0).isIsAllColumns())) {
                     for (int i = 0; i < select.getTablesQueried().get(0).getParam_projection().size(); i++) {
                         if (select.getTablesQueried().get(0).getParam_projection().get(i).getAlias() != null) {
                             String alias = select.getTablesQueried().get(0).getParam_projection().get(i).getAlias();
                             fields.put(select.getTablesQueried().get(0).getParam_projection().get(i).getName(), alias);
+                            System.out.println("yes " + select.getTablesQueried().get(0).getParam_projection().get(i).getName());
                         } else {
-                            fields.put(select.getTablesQueried().get(0).getParam_projection().get(i).getName(), 1);
+                            fields.put(select.getTablesQueried().get(0).getParam_projection().get(i).getName(), i);
+                            System.out.println("yes1 " + select.getTablesQueried().get(0).getParam_projection().get(i).getName());
                         }
+
+                        System.out.println("4 - Select Ordersize: " + select.getOrder().size());
                     }
                 }
             } else {
+                System.out.println("yes");
                 return null;
+
             }
         }
         fields.put("_id", 0);
@@ -75,12 +88,15 @@ public class SelectSimpleObjectTranslate {
         String queryMongo = null;
 
         if (select.getOrder().size() > 0) {
+            System.out.println("2 - Select Ordersize: " + select.getOrder().size());
             queryMongo = "{";
 
             for (int i = 0; i < select.getOrder().size(); i++) {
                 queryMongo += select.getOrder().get(i).getAttribute() + ": " + select.getOrder().get(i).getOrder() + ",";
+
             }
             queryMongo += "}";
+            System.out.println("3 - queryMongo: " + queryMongo);
         }
 
         return queryMongo;

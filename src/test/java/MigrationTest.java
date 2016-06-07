@@ -12,27 +12,16 @@ public class MigrationTest {
     private static MySQLConnection mysqlConnection;
     private static Database DB;
     private static Database DB_new;
-    private static long initObjExec_time, finalObjExec_time = 0;
-    private static long initNoSQlExec_time, finalNoSQLExec_time = 0;
-    private static double totalExecTime = 0;
+    private static long initObjExec_time, finalObjExec_time             = 0;
+    private static long initNoSQlExec_time, finalNoSQLExec_time         = 0;
+    private static double totalExecTime                                 = 0;
 
     public MigrationTest() {
 
     }
 
-//    @Test
-//    public void ya(){
-//
-//
-//
-//        System.out.println("1.1: " + (mysqlConnection.initialTableExecutionTime - DB.initialTableExecutionTime)/1e6);
-//
-//        migrate.createMetaData(migrate.mountObjects(mysqlConnection.getConnection(), DB),
-//                               mysqlConnection.getConnection());
-//    }
-
     @Test
-    public void mountObjectsTest(){
+    public void mountObjects_test(){
         DB_new = migrate.mountObjects(mysqlConnection.getConnection(), DB);
 
         finalObjExec_time = System.nanoTime();
@@ -40,8 +29,8 @@ public class MigrationTest {
         System.out.println("Time 1: " +(finalObjExec_time - initObjExec_time)/1e6);
     }
 
-    @Test(dependsOnMethods = "mountObjectsTest")
-    public void createMetaData(){
+    @Test(dependsOnMethods = "mountObjects_test")
+    public void createMetaData_test(){
 
         migrate.createMetaData(DB_new,
                                mysqlConnection.getConnection());

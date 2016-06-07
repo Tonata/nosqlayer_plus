@@ -12,6 +12,9 @@ import java.util.List;
  */
 public class SelectClause {
 
+    public SelectClause() {
+    }
+
     private Limit limit;
     private List<TablesQueried> tablesQueried = new ArrayList<>();
     private List<Sort> order = new ArrayList<>();
@@ -147,10 +150,10 @@ public class SelectClause {
         return null;
     }
 
-    public List<ProjectionParams> returnAttributesByName(String tableNome){
+    public List<ProjectionParams> returnAttributesByName(String tableName){
 
         for(int i=0; i<this.tablesQueried.size();i++){
-            if(tableNome.equals(tablesQueried.get(i).getName())){
+            if(tableName.equals(tablesQueried.get(i).getName())){
                 if(tablesQueried.get(i).isIsAllColumns()){
                     ProjectionParams projecao_tmp = new ProjectionParams();
                     List<ProjectionParams> list_tmp = new ArrayList<>();

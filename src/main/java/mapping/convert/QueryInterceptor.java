@@ -33,6 +33,9 @@ public class QueryInterceptor {
 
     public static DB database = MongoConnection.getInstance().getDB();
 
+    public QueryInterceptor() {
+    }
+
     /**
      * Web service operation
      *
@@ -73,13 +76,16 @@ public class QueryInterceptor {
                         finalResultsetExecutionTime = System.currentTimeMillis();
                         totalResultsetExecutionTime = finalResultsetExecutionTime - initialResultsetExecutionTime;
                     } else {
-                        //Decide entre usar ou não o Aggregation Framework
+                        //Decision to use Aggregation Framework or not
                         if (selectTranslate.getFunctions().isEmpty()) {
 
-                            SelectSimpleObjectTranslate selectMongo = new SelectSimpleObjectTranslate();
+                            SelectSimpleObjectTranslate selectMongo = new SelectSimpleObjectTranslate(); // MAKE LESS COUPLED
                             initialExecuteTime = System.currentTimeMillis();
 
                             resultSimpleQuery = selectMongo.executeMongoSelect(selectTranslate);
+
+                            System.out.println("5: " + resultSimpleQuery.toString());
+
                             finalExecuteSelectTime = System.currentTimeMillis();
                             totalSelectExecutionTime = finalExecuteSelectTime - initialExecuteTime;
 

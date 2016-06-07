@@ -19,6 +19,9 @@ import java.util.ArrayList;
  */
 public class AggregationQuery {
 
+    public AggregationQuery() {
+    }
+
     public ArrayList<DBObject> returnVectorValues(DBObject criteria, DBObject projection,
                                                   DBObject groupBy, DBObject order, Long limit, Long offset,
                                                   SelectClause selectStatement) {
@@ -264,9 +267,9 @@ public class AggregationQuery {
         AggregationOutput exit = collection.aggregate(criteria_ppl, projection_ppl);
         String json_str = exit.results().toString();
         String attributes = "";
-        int tamanho_resultado = json_str.length();
+        int result_size = json_str.length();
         if (!json_str.toString().equals("[ ]")) {
-            JSONObject my_obj = new JSONObject(json_str.substring(1, tamanho_resultado - 1));
+            JSONObject my_obj = new JSONObject(json_str.substring(1, result_size - 1));
             attributes = my_obj.get("columns").toString().substring(1, my_obj.get("columns").toString().length() - 1);
             attributes = attributes.replaceAll("[\"]", "'");
         }
