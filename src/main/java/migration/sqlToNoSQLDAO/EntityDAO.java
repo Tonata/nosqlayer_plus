@@ -8,6 +8,7 @@ import com.mongodb.util.JSON;
 import connectionConfig.MongoConnection;
 import migration.model.Column;
 import migration.model.Table;
+import redis.clients.jedis.Jedis;
 
 import java.util.Map;
 
@@ -18,6 +19,7 @@ public class EntityDAO<T> {
 
     private DBCollection dbCollection;
 
+
     public void setCollection(String collection){
         this.dbCollection = MongoConnection.getInstance().getDB().getCollection(collection);
     }
@@ -27,8 +29,10 @@ public class EntityDAO<T> {
     }
 
     public void save(Map<String, Object> mapEntity, Table table) {
+
         BasicDBObject document = new BasicDBObject(mapEntity);
         dbCollection.save(document);
+
 
 //         System.out.println("Save :> " + document);
     }

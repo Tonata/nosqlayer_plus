@@ -1,6 +1,7 @@
 package mapping.statement;
 
-import migration.model.Column;
+
+import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import java.util.ArrayList;

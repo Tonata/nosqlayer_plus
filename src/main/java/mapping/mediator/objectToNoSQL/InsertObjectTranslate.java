@@ -24,8 +24,12 @@ public class InsertObjectTranslate {
         DBObject dbObject = (DBObject) JSON.parse(mongoQuery);
         DBCollection collection = database.getCollection(insertStatement.getTable().getName());
 
+
+
         AutoIncrementInsert auto_inc = new AutoIncrementInsert();
         String next_id = auto_inc.getNextId(database, collection.getName());
+
+        System.out.println("Hello: " + next_id);
         int id_final = Integer.parseInt(next_id);
         String atributeAutoInc = auto_inc.getAtributeAutoInc(database, collection.getName());
         dbObject.put(atributeAutoInc, id_final);
@@ -50,6 +54,8 @@ public class InsertObjectTranslate {
             }
         }
         mongoQuery += "}";
+
+//        System.out.println("MongoQuery: " + mongoQuery);
         return mongoQuery;
     }
 }

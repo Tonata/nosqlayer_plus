@@ -58,19 +58,11 @@ public class Migrate {
 
             while (result_tables.next()){
 
-                System.out.println("Table Name:" + result_tables.getString("TABLE_NAME"));
+//                System.out.println("Table Name:" + result_tables.getString("TABLE_NAME"));
 
                 Table table = new Table();
                 table.setName(result_tables.getString("TABLE_NAME"));
                 ResultSet result_columns = DB_MD.getColumns(null, null, table.getName(), "%");
-
-                while (result_columns.next()) {
-                    String name                                 = result_columns.getString("COLUMN_NAME");
-                    String type                                 = result_columns.getString("TYPE_NAME");
-                    int column_size                             = result_columns.getInt("COLUMN_SIZE");
-
-                    System.out.println("Column name: [" + name + "]; type: [" + type + "]; size: [" + column_size + "]");
-                }
 
                 ResultSet foreignKeys = DB_MD.getImportedKeys(null, null, result_tables.getString("TABLE_NAME"));
 
@@ -91,6 +83,7 @@ public class Migrate {
 //                       " - "+tableReferencedForeignKey+" - "+
 //                       columnReferencedForeignKey);
                 }
+
 
                 while (result_columns.next()) {
                     Column column                               = new Column();
@@ -118,6 +111,7 @@ public class Migrate {
                     }
 
                     table.addColumns(column);
+
                 }
                 dataBase.addTable(table);
             }
@@ -144,15 +138,20 @@ public class Migrate {
         try{
 
             for (Table table : database.getTables()) {
-                // System.out.println("Table: " + table.getName());
+//                 System.out.println("1 Table: " + table.getName());
                 BasicDBObject table_metadata = new BasicDBObject("table", table.getName());
                 ArrayList<String> columns    = new ArrayList<>();
+
+//                System.out.println("2 Columns: " + table.getColumns());
+
                 for (Column column : table.getColumns()) {
                     if (column.isPrimaryKey()) {
                         table_metadata.append("auto_inc", column.getName());
+//                        System.out.println("3 PK: " + column.getName());
                     }
 
                     columns.add(column.getName());
+//                    System.out.println("4 Clm: " + column.getName());
 
                 }
                 table_metadata.append("columns", columns);

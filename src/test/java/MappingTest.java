@@ -14,6 +14,8 @@ import java.util.ArrayList;
  */
 public class MappingTest {
 
+    private static long initObjExec_time, finalObjExec_time             = 0;
+
     public MappingTest() {
     }
 
@@ -50,9 +52,17 @@ public class MappingTest {
 
         ArrayList<String> returnStr = new ArrayList<>();
 
-        returnStr = interceptor.intercept("SELECT Language FROM CountryLanguage;", "SELECT");
+//        returnStr = interceptor.intercept("SELECT Language, Percentage FROM CountryLanguage;", "SELECT");
+
+
+        interceptor.intercept("INSERT INTO City (Name, CountryCode, District, Population ) VALUES ('Tester','TST','Tester', 186800);", "INSERT");
+        interceptor.intercept("INSERT INTO City (Name, CountryCode, District, Population ) VALUES ('Tester','TST','Tester', 186800);", "INSERT");
+
+        finalObjExec_time = System.nanoTime();
 
         System.out.println(returnStr.toString());
+
+        System.out.println("Time 2: " +(finalObjExec_time - initObjExec_time)/1e6);
 
 //        String query = "SELECT MAX(Percentage) FROM CountryLanguage;";
 //

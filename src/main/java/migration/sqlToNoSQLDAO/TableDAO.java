@@ -3,7 +3,9 @@ package migration.sqlToNoSQLDAO;
 import migration.model.Table;
 
 import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -15,10 +17,27 @@ public class TableDAO extends EntityDAO<Table> {
 
 
         setCollection(table.getName());
-        Map<String, Object> mapTable =  new TableMapper().converterToMap(table,tuple);
-        save(mapTable, table);
+//        Map<String, Object> mapTable =  new TableMapper().converterToMap(table,tuple);
+        Map<String, Object> mapTable = new HashMap<>();
 
-        //System.out.println("Save > "+tuple);
+        ResultSetMetaData mD = tuple.getMetaData();
+        int columns = mD.getColumnCount();
+
+        while (tuple.next()){
+//            System.out.print(": " + tuple.getObject(1).toString());
+            for (int i = 1; i <= columns; i++){
+                mapTable.put(mD.getColumnName(i), tuple.getObject(i));
+//                System.out.println("Column Name: " + mD.getColumnName(i));
+//                System.out.println("Tuple Obj: " + tuple.getObject(i));
+
+            }
+            save(mapTable, table);
+
+        }
+
+
+
+//        System.out.println("Save > "+tuple);
     }
 
 }

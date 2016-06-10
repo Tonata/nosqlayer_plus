@@ -21,6 +21,9 @@ public class InsertToObject {
 
         Insert insertStatement = (Insert) statement;
 
+//        System.out.println("Columns: " + insertStatement.getColumns());
+//        System.out.println("Table: " + insertStatement.getTable());
+
         insertClause.setTable(insertStatement.getTable());
         insertClause.setColumns(insertStatement.getColumns());
         insertClause.setValues(((ExpressionList) insertStatement.getItemsList()));

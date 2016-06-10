@@ -27,8 +27,13 @@ public class SelectToObject {
         PlainSelect plain = (PlainSelect) selectStatement.getSelectBody();
         TablesQueried table_queried = new TablesQueried();
 
+
+
         //Considering from only one table
         FromItem fromItem = plain.getFromItem();
+
+//        System.out.println("From item alias: " + fromItem.toString());
+
         if (fromItem.getAlias() != null) {
             table_queried.setName(fromItem.toString().split(" ")[0]);
             table_queried.setAlias(fromItem.getAlias());
@@ -63,6 +68,8 @@ public class SelectToObject {
             // Checks whether the attribute belongs to the table in cases of a.actor
             if (table_queried.getAlias() != null) {
                 String table_alias = table_queried.getAlias() + ".";
+
+
 
                 //If the attribute is the table in question
                 if (selectItems.get(i).toString().contains(table_alias)) {
@@ -102,14 +109,22 @@ public class SelectToObject {
                         }
                     }
                 }
-                //If the table has no alias , we consider that it is only a table
-            } else {
+
+            }
+            //If the table has no alias , we consider that it is only a table
+            else {
+
+                // In case of 'select *'
                 if (selectItems.get(i).toString().equals("*")) {
                     table_queried.setIsAllColumns(true);
-                } else {
+                }
 
+                else
+                {
                     //Checks if any item sought is a function eg MAX,COUNT
                     if (((SelectExpressionItem) selectItems.get(i)).getExpression() instanceof Function) {
+
+
                         String alias;
                         Function function = (Function) ((SelectExpressionItem) selectItems.get(i)).getExpression();
                         Functions functions = new Functions();
@@ -126,12 +141,16 @@ public class SelectToObject {
                             alias = ((SelectExpressionItem) selectItems.get(i)).getAlias();
                             functions.setAlias(alias);
                         }
+
                         selectClause.addFunction(functions);
+
                     } else {
+//                        System.out.println(2);
                         //In cases like Customer.customer
                         String table = ((Column) ((SelectExpressionItem) selectItems.get(i)).getExpression()).getTable().getName();
 
                         if (table != null) {
+//                            System.out.println(2.1);
                             if (table_queried.getName().equals(table)) {
                                 if (((SelectExpressionItem) selectItems.get(i)).getAlias() != null) {
                                     String alias = ((SelectExpressionItem) selectItems.get(i)).getAlias();
@@ -142,14 +161,17 @@ public class SelectToObject {
                             }
 
                         } else {
+//                            System.out.println(2.2);
 
                             // If it is not , for now we consider it a column
                             if (((SelectExpressionItem) selectItems.get(i)).getAlias() != null) {
                                 String alias = ((SelectExpressionItem) selectItems.get(i)).getAlias();
                                 parameter.setAlias(alias);
+
                             }
                             parameter.setName(((Column) ((SelectExpressionItem) selectItems.get(i)).getExpression()).getColumnName().split(" ")[0].toString());
                             table_queried.addParameters(parameter);
+//                            System.out.println(parameter.getName());
                         }
 
                     }
@@ -279,6 +301,7 @@ public class SelectToObject {
     public void addGroupBy(PlainSelect plain) {
         //GROUP BY
         if (plain.getGroupByColumnReferences() != null) {
+
             for (int i = 0; i < plain.getGroupByColumnReferences().size(); i++) {
                 selectClause.addColumnGroupBy((Column) plain.getGroupByColumnReferences().get(i));
             }
@@ -288,6 +311,7 @@ public class SelectToObject {
     public void addLimit(PlainSelect plain) {
         //LIMIT
         if (plain.getLimit() != null) {
+
             Limit limit = new Limit();
             if (plain.getLimit().isLimitAll()) {
                 limit.setLimitAll(true);
@@ -302,6 +326,7 @@ public class SelectToObject {
     public void addOrderBy(PlainSelect plain) {
         //ORDER BY
         if (plain.getOrderByElements() != null) {
+
             for (int i = 0; i < plain.getOrderByElements().size(); i++) {
                 Sort sort = new Sort();
 
@@ -327,6 +352,7 @@ public class SelectToObject {
 
     public void addWhere(PlainSelect plain, Select selectStatement) throws JSQLParserException {
         if (plain.getWhere() != null) {
+
             CriteriaIdentifier criteriaIdentifier = new CriteriaIdentifier();
             criteriaIdentifier.redirectQuery(selectStatement);
             selectClause.setCriteriaIdentifier(criteriaIdentifier);
